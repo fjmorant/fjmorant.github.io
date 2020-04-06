@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/@gitgraph/js"></script>
+  </head>
+  <body>
+    <div id="graph-container"></div>
+
+    <script>
+      const graphContainer = document.getElementById("graph-container");
+      const gitgraph = GitgraphJS.createGitgraph(graphContainer, {});
+
+      const author = "Javier <test@test.com>";
+
+      const master = gitgraph.branch("master");
+      master.commit({
+        subject: "Initial commit",
+        author
+      });
+
+      const feature1 = gitgraph.branch("App Tour");
+      feature1
+        .commit({
+          subject: "Make it work",
+          author
+        })
+        .commit({
+          subject: "Make it right",
+          author
+        })
+        .commit({
+          subject: "Make it fast",
+          author
+        });
+
+      master.merge({ branch: feature1, commitOptions: { author } });
+
+      const fixUIGlitch = gitgraph.branch("fixUI");
+      fixUIGlitch
+        .commit({
+          subject: "Fixed issue",
+          author
+        })
+        .commit({
+          subject: "Fixed test",
+          author
+        });
+
+      master.merge({ branch: fixUIGlitch, commitOptions: { author } });
+
+      const release_100 = gitgraph.branch({
+        parentBranch: master,
+        name: "RC/v1.0.0",
+        style: {
+          color: "green"
+        }
+      });
+      release_100
+        .commit({
+          subject: "Set version number",
+          author
+        })
+        .commit({
+          subject: "Crash fix",
+          author,
+          style: {
+            dot: { color: "green" }
+          }
+        });
+      release_100.commit({
+        subject: "Fix issue with audio",
+        author,
+        style: {
+          dot: { color: "green" }
+        }
+      });
+
+      release_100.tag("v1.0.0");
+
+      const release_101 = gitgraph.branch({
+        parentBranch: release_100,
+        name: "RC/v1.0.1",
+        style: {
+          color: "green"
+        }
+      });
+      release_101
+        .commit({
+          subject: "Set version number",
+          author
+        })
+        .commit({
+          subject: "Urgent hotfix",
+          author
+        });
+      release_101.tag("v1.0.1");
+
+      master.merge({ branch: release_100, commitOptions: { author } });
+
+      const feature3 = gitgraph.branch({
+        parentBranch: master,
+        name: "cross_entitlment"
+      });
+      feature3
+        .commit({
+          subject: "Make it work",
+          author
+        })
+        .commit({
+          subject: "Make it fast",
+          author
+        });
+
+      master.merge({ branch: feature3, commitOptions: { author } });
+
+      master.merge({ branch: release_101, commitOptions: { author } });
+
+      const release_200 = gitgraph
+        .branch({
+          parentBranch: master,
+          name: "RC/v2.0.0",
+          style: {
+            color: "green"
+          }
+        })
+        .commit({
+          subject: "Set version number",
+          author
+        });
+
+      release_200.tag("v2.0.0");
+      master.merge({ branch: release_200, commitOptions: { author } });
+    </script>
+  </body>
+</html>
